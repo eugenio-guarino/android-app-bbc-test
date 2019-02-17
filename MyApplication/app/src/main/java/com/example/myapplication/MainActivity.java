@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     String URL="https://raw.githubusercontent.com/fmtvp/recruit-test-data/master/data.json";
     ArrayList<String> FruitName;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         FruitName=new ArrayList<>();
-        spinner=(Spinner)findViewById(R.id.fruit_Name);
+        spinner= findViewById(R.id.fruit_Name);
         loadSpinnerData(URL);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -51,9 +52,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void sendMessage(View view){
-        Intent startNewActivity = new Intent(this, DisplayFruitActivity.class);
-        startActivity(startNewActivity);
+    public void displayInformation(View view){
+        Intent intent = new Intent(this, DisplayFruitActivity.class);
+        spinner= findViewById(R.id.fruit_Name);
+        String fruit = spinner.getItemAtPosition(spinner.getSelectedItemPosition()).toString();
+        intent.putExtra("message_key", fruit);
+        startActivity(intent);
     }
 
     private void loadSpinnerData(String url) {
