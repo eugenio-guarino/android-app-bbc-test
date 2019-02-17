@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">My Application</string>
     <string name="submit">Submit</string>
+    <string name="fruit_name">TextView</string>
+    <string name="weight_info">TextView</string>
+    <string name="price">Price:</string>
+    <string name="weight">Weight:</string>
+    <string name="price_info">TextView</string>
 </resources>

@@ -53,10 +53,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void displayInformation(View view){
+        Bundle extras = new Bundle();
         Intent intent = new Intent(this, DisplayFruitActivity.class);
+
         spinner= findViewById(R.id.fruit_Name);
         String fruit = spinner.getItemAtPosition(spinner.getSelectedItemPosition()).toString();
-        intent.putExtra("message_key", fruit);
+        int fruitIndex = spinner.getSelectedItemPosition();
+
+        extras.putString("fruit", fruit);
+        extras.putInt("index", fruitIndex);
+        intent.putExtras(extras);
         startActivity(intent);
     }
 
