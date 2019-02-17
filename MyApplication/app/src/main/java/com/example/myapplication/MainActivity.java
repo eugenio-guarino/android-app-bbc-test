@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -48,6 +49,11 @@ public class MainActivity extends AppCompatActivity {
                 // DO Nothing here
             }
         });
+    }
+
+    private void sendMessage(View view){
+        Intent startNewActivity = new Intent(this, DisplayFruitActivity.class);
+        startActivity(startNewActivity);
     }
 
     private void loadSpinnerData(String url) {
