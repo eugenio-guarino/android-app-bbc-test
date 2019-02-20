@@ -58,14 +58,23 @@ public class DisplayFruitActivity extends AppCompatActivity {
                     JSONObject jsonObject=new JSONObject(response);
                     JSONArray jsonArray=jsonObject.getJSONArray("fruit");
                     JSONObject jsonObject1=jsonArray.getJSONObject(index);
-                    String price=jsonObject1.optString("price");
-                    String weight=jsonObject1.optString("weight");
+                    double price=Double.parseDouble(jsonObject1.optString("price"));
+                    double weight=Double.parseDouble(jsonObject1.optString("weight"));
+
+                    price /= 100;
+
+                    weight /= 1000;
 
                     fruitPrice = findViewById(R.id.price_info);
-                    fruitPrice.setText(price);
+                    if (price > 1.00) {
+                        fruitPrice.setText(Double.toString(price) + " pounds");
+                    }
+                    else if (price < 1.00){
+                        fruitPrice.setText(Double.toString(price) + " pence");
+                    }
 
                     fruitWeight = findViewById(R.id.weight_info);
-                    fruitWeight.setText(weight);
+                    fruitWeight.setText(Double.toString(weight)+ " kilograms");
 
                 }catch (JSONException e){e.printStackTrace();}
             }

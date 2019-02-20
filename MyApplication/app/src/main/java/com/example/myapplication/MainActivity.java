@@ -33,23 +33,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         FruitName=new ArrayList<>();
         spinner= findViewById(R.id.fruit_Name);
         loadSpinnerData(URL);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String type=   spinner.getItemAtPosition(spinner.getSelectedItemPosition()).toString();
-                Toast.makeText(getApplicationContext(),type,Toast.LENGTH_LONG).show();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // DO Nothing here
-            }
-        });
     }
 
     public void displayInformation(View view){
