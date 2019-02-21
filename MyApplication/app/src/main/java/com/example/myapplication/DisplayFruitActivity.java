@@ -26,8 +26,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class DisplayFruitActivity extends AppCompatActivity {
-
-    String URL="https://raw.githubusercontent.com/fmtvp/recruit-test-data/master/data.json";
     TextView fruitName;
     TextView fruitWeight;
     TextView fruitPrice;
@@ -36,57 +34,37 @@ public class DisplayFruitActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_fruit);
-
-        Intent intent = getIntent();
-
-        Bundle extras = intent.getExtras();
-
-        String fruit = extras.getString("fruit");
-        int fruitIndex = extras.getInt("index");
         fruitName = findViewById(R.id.textView);
-        fruitName.setText(fruit);
+        try {
+            JSONObject jsonObject = new JSONObject(getIntent().getStringExtra("jsonObject"));
+            double price = Double.parseDouble(jsonObject.optString("price"));
+            double weight = Double.parseDouble(jsonObject.optString("weight"));
+            String fruit = jsonObject.optString("type");
+            showPrice(price);
+            showWeight(weight);
 
-        loadInformation(URL, fruitIndex);
+            fruitName.setText(fruit);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void loadInformation(String url, final int index) {
-        RequestQueue requestQueue= Volley.newRequestQueue(getApplicationContext());
-        StringRequest stringRequest=new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try{
-                    JSONObject jsonObject=new JSONObject(response);
-                    JSONArray jsonArray=jsonObject.getJSONArray("fruit");
-                    JSONObject jsonObject1=jsonArray.getJSONObject(index);
-                    double price=Double.parseDouble(jsonObject1.optString("price"));
-                    double weight=Double.parseDouble(jsonObject1.optString("weight"));
+    private void showPrice(double price){
+        price /= 100;
+        fruitPrice = findViewById(R.id.price_info);
+        if (price > 1.00) {
+            fruitPrice.setText(Double.toString(price) + " pounds");
+        }
+        else if (price < 1.00){
+            fruitPrice.setText(Double.toString(price) + " pence");
+        }
+    }
 
-                    price /= 100;
+    private void showWeight(double weight){
 
-                    weight /= 1000;
+        weight /= 1000;
+        fruitWeight = findViewById(R.id.weight_info);
+        fruitWeight.setText(Double.toString(weight)+ " kilograms");
 
-                    fruitPrice = findViewById(R.id.price_info);
-                    if (price > 1.00) {
-                        fruitPrice.setText(Double.toString(price) + " pounds");
-                    }
-                    else if (price < 1.00){
-                        fruitPrice.setText(Double.toString(price) + " pence");
-                    }
-
-                    fruitWeight = findViewById(R.id.weight_info);
-                    fruitWeight.setText(Double.toString(weight)+ " kilograms");
-
-                }catch (JSONException e){e.printStackTrace();}
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        });
-        int socketTimeout = 30000;
-        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        stringRequest.setRetryPolicy(policy);
-        requestQueue.add(stringRequest);
     }
 }

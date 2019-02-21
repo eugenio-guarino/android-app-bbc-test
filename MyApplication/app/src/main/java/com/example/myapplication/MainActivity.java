@@ -28,47 +28,57 @@ public class MainActivity extends AppCompatActivity {
     Spinner spinner;
     String URL="https://raw.githubusercontent.com/fmtvp/recruit-test-data/master/data.json";
     ArrayList<String> FruitName;
-
+    JSONObject APIdata;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         FruitName=new ArrayList<>();
         spinner= findViewById(R.id.fruit_Name);
-        loadSpinnerData(URL);
+        loadData(URL);
+        populateSpinner();
     }
 
     public void displayInformation(View view){
-        Bundle extras = new Bundle();
         Intent intent = new Intent(this, DisplayFruitActivity.class);
-
         spinner= findViewById(R.id.fruit_Name);
-        String fruit = spinner.getItemAtPosition(spinner.getSelectedItemPosition()).toString();
         int fruitIndex = spinner.getSelectedItemPosition();
+        try {
+            JSONObject jsonObject = getAPIdata();
+            JSONArray jsonArray = jsonObject.getJSONArray("fruit");
+            jsonObject = jsonArray.getJSONObject(fruitIndex);
+            intent.putExtra("jsonObject", jsonObject.toString());
+            startActivity(intent);
 
-        extras.putString("fruit", fruit);
-        extras.putInt("index", fruitIndex);
-        intent.putExtras(extras);
-        startActivity(intent);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void loadSpinnerData(String url) {
+    private void populateSpinner(){
+        try {
+            JSONObject jsonObject = getAPIdata();
+            JSONArray jsonArray = jsonObject.getJSONArray("fruit");
+            for(int i=0;i<jsonArray.length();i++){
+                JSONObject jsonObject1=jsonArray.getJSONObject(i);
+                String type=jsonObject1.getString("type");
+                FruitName.add(type);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        spinner.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, FruitName));
+    }
+
+    private void loadData(String url) {
         RequestQueue requestQueue=Volley.newRequestQueue(getApplicationContext());
         StringRequest stringRequest=new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try{
                     JSONObject jsonObject=new JSONObject(response);
-                    JSONArray jsonArray=jsonObject.getJSONArray("fruit");
-                    for(int i=0;i<jsonArray.length();i++){
-                        JSONObject jsonObject1=jsonArray.getJSONObject(i);
-                        String type=jsonObject1.getString("type");
-                        FruitName.add(type);
-                    }
-
-                    spinner.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, FruitName));
+                    setAPIdata(jsonObject);
                 }catch (JSONException e){e.printStackTrace();}
             }
         }, new Response.ErrorListener() {
@@ -83,4 +93,14 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    public JSONObject getAPIdata() {
+        return APIdata;
+    }
+
+    public void setAPIdata(JSONObject APIdata) {
+        this.APIdata = APIdata;
+    }
+
 }
+
+
