@@ -37,7 +37,9 @@ public class MainActivity extends AppCompatActivity {
         FruitName=new ArrayList<>();
         spinner= findViewById(R.id.fruit_Name);
         loadSpinnerData(URL);
+        getRoundTrip(GET_URL);
     }
+
 
     public void loadSpinnerData(String url) {
         RequestQueue requestQueue=Volley.newRequestQueue(getApplicationContext());
@@ -66,6 +68,36 @@ public class MainActivity extends AppCompatActivity {
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
+    }
+
+    public void getRoundTrip( final String url){
+
+        final long start_time = System.nanoTime();
+
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        long end_time = System.nanoTime();
+                        double difference = (end_time - start_time) / 1e6;
+                        String finalURL = url + "?event=load&data=";
+                        System.out.println("REQUEST ROUND TRIP "+finalURL + difference );
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("That didn't work!");
+            }
+        });
+
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 
     public void displayInformation(View view){
