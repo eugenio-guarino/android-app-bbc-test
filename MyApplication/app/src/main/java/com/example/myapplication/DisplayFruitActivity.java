@@ -26,15 +26,18 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class DisplayFruitActivity extends AppCompatActivity {
-    TextView fruitName;
-    TextView fruitWeight;
-    TextView fruitPrice;
+    private TextView fruitName;
+    private TextView fruitWeight;
+    private TextView fruitPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_fruit);
         fruitName = findViewById(R.id.textView);
+
+        // open the intent sent by the first screen and call the appropriate methods
+        // to display the information
         try {
             JSONObject jsonObject = new JSONObject(getIntent().getStringExtra("jsonObject"));
             double price = Double.parseDouble(jsonObject.optString("price"));
@@ -49,22 +52,32 @@ public class DisplayFruitActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * this methods converts the price in pence and pounds
+     * @param price
+     */
     private void showPrice(double price){
         price /= 100;
         fruitPrice = findViewById(R.id.price_info);
         if (price > 1.00) {
             fruitPrice.setText(Double.toString(price) + " pounds");
         }
-        else if (price < 1.00){
+        else if (price == 1.00){
+            fruitPrice.setText(Double.toString(price) + " pound");
+        }
+        else{
             fruitPrice.setText(Double.toString(price) + " pence");
         }
     }
 
+    /**
+     * this methods converts the weight into kgs
+     * @param weight
+     */
     private void showWeight(double weight){
 
         weight /= 1000;
         fruitWeight = findViewById(R.id.weight_info);
         fruitWeight.setText(Double.toString(weight)+ " kilograms");
-
     }
 }

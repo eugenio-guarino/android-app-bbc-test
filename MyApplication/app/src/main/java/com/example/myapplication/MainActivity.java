@@ -23,10 +23,11 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    // initialise some variables
     private Spinner spinner;
     private String URL="https://raw.githubusercontent.com/fmtvp/recruit-test-data/master/data.json";
     private String GET_URL="https://raw.githubusercontent.com/fmtvp/recruit-test-data/master/stats";
-    private ArrayList<String> FruitName;
     private JSONObject APIdata;
 
 
@@ -34,14 +35,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FruitName=new ArrayList<>();
         spinner= findViewById(R.id.fruit_Name);
         loadSpinnerData(URL);
         getRoundTrip(GET_URL);
     }
 
-
+    /**
+     * this method loads the API and displays it as a list
+     * @param url
+     */
     public void loadSpinnerData(String url) {
+        // initialise list
+        final ArrayList<String> FruitName = new ArrayList<>();
+
         RequestQueue requestQueue=Volley.newRequestQueue(getApplicationContext());
         StringRequest stringRequest=new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
@@ -70,19 +76,23 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    /**
+     * this method prints out the HTTP round trip time in milliseconds
+     * @param url
+     */
     public void getRoundTrip( final String url){
-
+        //starting time
         final long start_time = System.nanoTime();
 
-        // Instantiate the RequestQueue.
+        // instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        // Request a string response from the provided URL.
+        // request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
+                        // print out the time in milliseconds
                         long end_time = System.nanoTime();
                         double difference = (end_time - start_time) / 1e6;
                         String finalURL = url + "?event=load&data=";
@@ -94,12 +104,17 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("That didn't work!");
             }
         });
-
-
-        // Add the request to the RequestQueue.
+        // add the request to the RequestQueue.
         queue.add(stringRequest);
     }
 
+    /**
+     * this method is called when the submit button is pressed
+     * and its purpose is to pass the chosen fruit to the second
+     * screen
+     *
+     * @param view
+     */
     public void displayInformation(View view){
         Intent intent = new Intent(this, DisplayFruitActivity.class);
         spinner= findViewById(R.id.fruit_Name);
@@ -116,11 +131,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * gets the global API data
+     * @return
+     */
     public JSONObject getAPIdata() {
         return APIdata;
     }
 
+    /**
+     * sets the global API data
+     * @param APIdata
+     */
     public void setAPIdata(JSONObject APIdata) {
         this.APIdata = APIdata;
     }
