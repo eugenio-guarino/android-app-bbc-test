@@ -132,6 +132,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * forces the reload of the data
+     * @param view
+     */
+    public void reloadAPI( View view ) {
+        loadSpinnerData(URL);
+    }
+
+    /**
      * gets the global API data
      * @return
      */
@@ -146,4 +154,6 @@ public class MainActivity extends AppCompatActivity {
     public void setAPIdata(JSONObject APIdata) {
         this.APIdata = APIdata;
     }
+
+
 }
