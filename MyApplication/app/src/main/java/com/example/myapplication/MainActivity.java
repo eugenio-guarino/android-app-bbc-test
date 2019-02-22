@@ -1,14 +1,12 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
-
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,10 +23,12 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
-    Spinner spinner;
-    String URL="https://raw.githubusercontent.com/fmtvp/recruit-test-data/master/data.json";
-    ArrayList<String> FruitName;
-    JSONObject APIdata;
+    private Spinner spinner;
+    private String URL="https://raw.githubusercontent.com/fmtvp/recruit-test-data/master/data.json";
+    private String GET_URL="https://raw.githubusercontent.com/fmtvp/recruit-test-data/master/stats";
+    private ArrayList<String> FruitName;
+    private JSONObject APIdata;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +36,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         FruitName=new ArrayList<>();
         spinner= findViewById(R.id.fruit_Name);
-        loadData(URL);
-        populateSpinner();
+        loadSpinnerData(URL);
+    }
+
+    public void loadSpinnerData(String url) {
+        RequestQueue requestQueue=Volley.newRequestQueue(getApplicationContext());
+        StringRequest stringRequest=new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try{
+                    JSONObject jsonObject=new JSONObject(response);
+                    setAPIdata(jsonObject);
+                    JSONArray jsonArray=jsonObject.getJSONArray("fruit");
+                    for(int i=0;i<jsonArray.length();i++){
+                        JSONObject jsonObject1=jsonArray.getJSONObject(i);
+                        String type=jsonObject1.getString("type");
+                        FruitName.add(type);
+                    }
+                    spinner.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, FruitName));
+                }catch (JSONException e){e.printStackTrace();}
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        int socketTimeout = 30000;
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        stringRequest.setRetryPolicy(policy);
+        requestQueue.add(stringRequest);
     }
 
     public void displayInformation(View view){
@@ -56,42 +84,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void populateSpinner(){
-        try {
-            JSONObject jsonObject = getAPIdata();
-            JSONArray jsonArray = jsonObject.getJSONArray("fruit");
-            for(int i=0;i<jsonArray.length();i++){
-                JSONObject jsonObject1=jsonArray.getJSONObject(i);
-                String type=jsonObject1.getString("type");
-                FruitName.add(type);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        spinner.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, FruitName));
-    }
-
-    private void loadData(String url) {
-        RequestQueue requestQueue=Volley.newRequestQueue(getApplicationContext());
-        StringRequest stringRequest=new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try{
-                    JSONObject jsonObject=new JSONObject(response);
-                    setAPIdata(jsonObject);
-                }catch (JSONException e){e.printStackTrace();}
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        });
-        int socketTimeout = 30000;
-        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        stringRequest.setRetryPolicy(policy);
-        requestQueue.add(stringRequest);
-    }
 
     public JSONObject getAPIdata() {
         return APIdata;
@@ -100,7 +92,4 @@ public class MainActivity extends AppCompatActivity {
     public void setAPIdata(JSONObject APIdata) {
         this.APIdata = APIdata;
     }
-
 }
-
-
