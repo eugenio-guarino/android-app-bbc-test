@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,14 +27,21 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class DisplayFruitActivity extends AppCompatActivity {
-    private TextView fruitName;
-    private TextView fruitWeight;
-    private TextView fruitPrice;
+    TextView fruitName;
+    TextView fruitWeight;
+    TextView fruitPrice;
+
+    private String URL="https://raw.githubusercontent.com/fmtvp/recruit-test-data/master/data.json";
+    private String GET_URL="https://raw.githubusercontent.com/fmtvp/recruit-test-data/master/stats";
+    private static final String EVENT_TYPE_DISPLAY = "display";
+    RequestQueue queue = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_fruit);
+        queue = Volley.newRequestQueue(this);
+
         fruitName = findViewById(R.id.textView);
 
         // open the intent sent by the first screen and call the appropriate methods
@@ -50,6 +58,12 @@ public class DisplayFruitActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        submitEvent(EVENT_TYPE_DISPLAY, System.currentTimeMillis());
     }
 
     /**
@@ -80,4 +94,28 @@ public class DisplayFruitActivity extends AppCompatActivity {
         fruitWeight = findViewById(R.id.weight_info);
         fruitWeight.setText(Double.toString(weight)+ " kilograms");
     }
+
+    /**
+     *
+     * @param event
+     * @param data
+     */
+    private void submitEvent(String event, long data ) {
+        Log.d("test", "submitEvent() called with: event = [" + event + "], data = [" + data + "]");
+        String url = GET_URL+"?event="+event+"data="+data;
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                }
+        );
+        queue.add(stringRequest);
+    }
+
 }
