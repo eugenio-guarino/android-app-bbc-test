@@ -52,11 +52,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        //get request when the page is loaded
         submitEvent(EVENT_TYPE_DISPLAY, System.currentTimeMillis());
     }
 
     /**
-     * this method loads the API and displays it as a list
+     * this method loads the API and displays it in the spinner
      * @param url
      */
     public void loadSpinnerData(String url) {
@@ -89,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
             }) {
             @Override
             protected Response<String> parseNetworkResponse( NetworkResponse response ) {
-                //this returns the time in MS of when the page is shown
                 long responseMS = response.networkTimeMs;
                 submitEvent(EVENT_TYPE_NETWORK, responseMS);
                 return super.parseNetworkResponse(response);
@@ -106,9 +106,9 @@ public class MainActivity extends AppCompatActivity {
      * @param event
      * @param data
      */
-    private void submitEvent(String event, long data ) {
+    private void submitEvent( String event, long data ) {
         Log.d("test", "submitEvent() called with: event = [" + event + "], data = [" + data + "]");
-        String url = GET_URL+"?event="+event+"data="+data;
+        String url = GET_URL+"?event="+event+"&data="+data;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
      * @param view
      */
     public void reloadAPI( View view ) {
+        queue = Volley.newRequestQueue(this);
         loadSpinnerData(URL);
     }
 
